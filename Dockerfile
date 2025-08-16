@@ -64,4 +64,4 @@ ADD handler.py .
 ADD 360.json .
 
 # Run the handler
-CMD python -u /handler.py
+CMD python main.py --listen 0.0.0.0 & python -u /handler.py
