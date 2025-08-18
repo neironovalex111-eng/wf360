@@ -1,11 +1,14 @@
 FROM runpod/base:0.6.3-cuda11.8.0
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install base
 RUN apt-get update && apt-get install -y git wget libgl1-mesa-glx libglib2.0-0 && rm -rf /var/lib/apt/lists/*
 
-# Set python3.11 as the default python
-RUN ln -sf $(which python3.11) /usr/local/bin/python && \
-    ln -sf $(which python3.11) /usr/local/bin/python3
+# Set python3.11 venv
+RUN python3.11 -m venv /opt/venv
+
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Install ComfyUI
 WORKDIR /
@@ -17,8 +20,8 @@ COPY 360.json .
 COPY requirements.txt /requirements.txt
 ENV PIP_ROOT_USER_ACTION=ignore
 RUN python -m pip install --upgrade pip && \
-    uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129 --no-cache-dir --system && \
-    uv pip install --upgrade -r /requirements.txt --no-cache-dir --system
+    uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129 --no-cache-dir && \
+    uv pip install --upgrade -r /requirements.txt --no-cache-dir
 
 # Install custom_nodes
 WORKDIR /ComfyUI/custom_nodes
@@ -40,6 +43,15 @@ RUN git clone https://github.com/ltdrdata/ComfyUI-Manager comfyui-manager && \
     git clone https://github.com/evanspearman/ComfyMath && \
     git clone https://github.com/alexopus/ComfyUI-Image-Saver && \
     git clone https://github.com/ProGamerGov/ComfyUI_preview360panorama
+
+# Install custom_nodes dependencies
+RUN for d in */ ; do \
+        # Проверяем, что это не менеджер и что файл requirements.txt существует
+        if [ "$d" != "comfyui-manager/" ] && [ -f "${d}requirements.txt" ]; then \
+            echo "--- Installing requirements for $d ---"; \
+            pip install -r "${d}requirements.txt"; \
+        fi; \
+    done
 
 # Install models
 WORKDIR /ComfyUI/models
