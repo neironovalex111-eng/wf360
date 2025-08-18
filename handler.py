@@ -118,6 +118,7 @@ def handler(job):
     Основной обработчик, который дёргает RunPod.
     """
     job_input = job['input']
+    print(job_input)
     image = job_input.get("image")
 
     if not image:
@@ -156,5 +157,5 @@ def handler(job):
 
 if __name__ == "__main__":
     print("Стартуем сервер-обработчик для RunPod...")
-    time.sleep(5) 
+    time.sleep(120) 
     runpod.serverless.start({"handler": handler})
