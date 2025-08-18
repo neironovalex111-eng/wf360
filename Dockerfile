@@ -16,7 +16,6 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 
 # Install dependencies
 WORKDIR /ComfyUI
-COPY 360.json .
 COPY requirements.txt /requirements.txt
 ENV PIP_ROOT_USER_ACTION=ignore
 RUN python -m pip install --upgrade pip && \
@@ -61,5 +60,6 @@ RUN git clone https://huggingface.co/happyneishon/models360
 # Add files
 WORKDIR /
 COPY handler.py .
+COPY 360.json .
 # Run the handler
 CMD python /ComfyUI/main.py --listen 0.0.0.0 & python -u /handler.py
