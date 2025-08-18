@@ -15,6 +15,7 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 WORKDIR /ComfyUI
 ADD 360.json .
 COPY requirements.txt /requirements.txt
+RUN uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129 --no-cache-dir --system
 RUN uv pip install --upgrade -r /requirements.txt --no-cache-dir --system
 
 # Install custom_nodes
