@@ -84,17 +84,6 @@
       "title": "ConditioningZeroOut"
     }
   },
-  "142": {
-    "inputs": {
-      "image": "photo_por.jpg [output]",
-      "refresh": false,
-      "upload": "refresh"
-    },
-    "class_type": "LoadImageOutput",
-    "_meta": {
-      "title": "Load Image (from Outputs)"
-    }
-  },
   "177": {
     "inputs": {
       "conditioning": [
@@ -251,7 +240,7 @@
       ],
       "crop": "disabled",
       "image": [
-        "142",
+        "508",
         0
       ]
     },
@@ -1193,13 +1182,22 @@
   "507": {
     "inputs": {
       "image": [
-        "142",
+        "508",
         0
       ]
     },
     "class_type": "Get Image Size",
     "_meta": {
       "title": "Get Image Size"
+    }
+  },
+  "508": {
+    "inputs": {
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
     }
   }
 }

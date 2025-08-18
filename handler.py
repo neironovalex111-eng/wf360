@@ -135,7 +135,7 @@ def handler(job):
 
     # 3. Модифицируем воркфлоу на лету. В ноду загрузки подставляем имя нашего файла.
     # Используем ID ноды, который ты дал: '142'
-    prompt_workflow['142']['inputs']['image'] = uploaded_filename
+    prompt_workflow['508']['inputs']['image'] = uploaded_filename
 
     # 4. Подключаемся к WebSocket и отправляем задачу
     try:
