@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import time
@@ -18,7 +19,7 @@ COMFYUI_API_ADDRESS = "http://127.0.0.1:8188"
 # Уникальный ID для нашей сессии
 CLIENT_ID = str(uuid.uuid4())
 
-def upload_image(image_url):
+def upload_image_from_url(image_url):
     """
     Скачивает изображение по URL и загружает его в ComfyUI через API.
     Возвращает имя файла, которое присвоил ComfyUI.
@@ -45,6 +46,35 @@ def upload_image(image_url):
         except requests.RequestException as e:
             print(f"Пиздец, не удалось загрузить картинку: {e}")
             return None
+
+
+def upload_image_from_base64(base64_string):
+    """
+    Декодирует изображение из Base64 и загружает его в ComfyUI через API.
+    Возвращает имя файла, которое присвоил ComfyUI.
+    """
+    try:
+        # Декодируем строку Base64 в бинарные данные
+        image_data = base64.b64decode(base64_string)
+
+        # Готовим данные для POST-запроса (multipart/form-data)
+        # Мы передаем бинарные данные прямо в память, без создания файла
+        # ВАЖНО: Укажите правильный content-type (image/png, image/jpeg и т.д.)
+        # Здесь мы для примера используем 'image.png'
+        filename = "uploaded_image.png"
+        files = {'image': (filename, image_data, 'image/png')} 
+        data = {'overwrite': 'true'} # Перезаписывать, если файл существует
+
+        # Отправляем в ComfyUI
+        response = requests.post(f"{COMFYUI_API_ADDRESS}/upload/image", files=files, data=data)
+        response.raise_for_status()
+
+        # Возвращаем имя файла, под которым его сохранил ComfyUI
+        return response.json()['name']
+        
+    except (requests.RequestException, base64.binascii.Error, KeyError) as e:
+        print(f"Пиздец, не удалось загрузить картинку из Base64: {e}")
+        return None
 
 def queue_prompt(prompt_workflow):
     """Отправляет workflow в очередь ComfyUI API"""
@@ -88,18 +118,18 @@ def handler(job):
     Основной обработчик, который дёргает RunPod.
     """
     job_input = job['input']
-    image_url = job_input.get("image_url")
+    image = job_input.get("image")
 
-    if not image_url:
+    if not image:
         return {"error": "Бро, ты забыл передать 'image_url' в запросе."}
 
     # 1. Загружаем картинку в ComfyUI. Это наш первый и самый важный шаг.
-    uploaded_filename = upload_image(image_url)
+    uploaded_filename = upload_image_from_base64(image)
     if not uploaded_filename:
         return {"error": "Не смог загрузить твою картинку."}
 
     # 2. Загружаем наш шаблон workflow
-    with open('your_workflow.json', 'r') as f:
+    with open('360.json', 'r') as f:
         prompt_workflow = json.load(f)
 
     # 3. Модифицируем воркфлоу на лету. В ноду загрузки подставляем имя нашего файла.
@@ -124,10 +154,7 @@ def handler(job):
 
     return output
 
-# --- СТАРТ СЕРВЕРА ---
-# Эта строка запускает всю магию
 if __name__ == "__main__":
     print("Стартуем сервер-обработчик для RunPod...")
-    # Даём ComfyUI пару секунд на разогрев, чтобы API был точно доступен
     time.sleep(5) 
     runpod.serverless.start({"handler": handler})
