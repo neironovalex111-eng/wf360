@@ -1,182 +1,166 @@
 import base64
+from io import BytesIO
 import json
 import os
 import time
-import urllib.request
 import uuid
 
 import requests
-
-#
-# runpod_handler.py
-#
 import runpod
 import websocket
 
-# --- КОНФИГУРАЦИЯ ---
-# Адрес API ComfyUI внутри контейнера
-COMFYUI_API_ADDRESS = "http://127.0.0.1:8188"
-# Уникальный ID для нашей сессии
-CLIENT_ID = str(uuid.uuid4())
+# --- НАСТРОЙКИ ---
+# Адрес API ComfyUI
+COMFY_HOST = "127.0.0.1:8188"
+# ID ноды, куда грузить картинку (твоя LoadImage нода)
+LOAD_IMAGE_NODE_ID = '508'  # <--- ЗАМЕНИ НА СВОЙ ID
+# ID ноды, откуда забирать результат (твоя SaveImage или Preview нода)
+SAVE_IMAGE_NODE_ID = '506'  # <--- ЗАМЕНИ НА СВОЙ ID
+# Имя файла с workflow в API-формате
+WORKFLOW_FILE = '360_api.json' # <--- УБЕДИСЬ, ЧТО ИМЯ ПРАВИЛЬНОЕ
 
-def upload_image_from_url(image_url):
-    """
-    Скачивает изображение по URL и загружает его в ComfyUI через API.
-    Возвращает имя файла, которое присвоил ComfyUI.
-    """
-    # Скачиваем картинку во временный файл
-    filename = os.path.basename(image_url.split('?')[0]) # Простое получение имени файла
-    urllib.request.urlretrieve(image_url, filename)
 
-    # Готовим данные для POST-запроса (multipart/form-data)
-    with open(filename, 'rb') as f:
-        files = {'image': (filename, f, 'image/jpeg')} # Тип можно менять
-        data = {'overwrite': 'true'} # Перезаписывать, если файл существует
-        
-        # Отправляем в ComfyUI
+def check_server_ready(url, retries=500, delay=50):
+    """Ждет, пока сервер ComfyUI не станет доступен."""
+    print(f"Ожидаем готовности ComfyUI по адресу {url}...")
+    for i in range(retries):
         try:
-            response = requests.post(f"{COMFYUI_API_ADDRESS}/upload/image", files=files, data=data)
-            response.raise_for_status()
-            
-            # Убираем за собой временный файл
-            os.remove(filename)
-
-            # Возвращаем имя файла, под которым его сохранил ComfyUI
-            return response.json()['name']
-        except requests.RequestException as e:
-            print(f"Пиздец, не удалось загрузить картинку: {e}")
-            return None
-
-
-def upload_image_from_base64(base64_string):
-    """
-    Декодирует изображение из Base64 и загружает его в ComfyUI через API.
-    Возвращает имя файла, которое присвоил ComfyUI.
-    """
-    try:
-        # Декодируем строку Base64 в бинарные данные
-        image_data = base64.b64decode(base64_string)
-
-        # Готовим данные для POST-запроса (multipart/form-data)
-        # Мы передаем бинарные данные прямо в память, без создания файла
-        # ВАЖНО: Укажите правильный content-type (image/png, image/jpeg и т.д.)
-        # Здесь мы для примера используем 'image.png'
-        filename = "uploaded_image.png"
-        files = {'image': (filename, image_data, 'image/png')} 
-        data = {'overwrite': 'true'} # Перезаписывать, если файл существует
-
-        # Отправляем в ComfyUI
-        response = requests.post(f"{COMFYUI_API_ADDRESS}/upload/image", files=files, data=data)
-        response.raise_for_status()
-
-        # Возвращаем имя файла, под которым его сохранил ComfyUI
-        return response.json()['name']
-        
-    except (requests.RequestException, base64.binascii.Error, KeyError) as e:
-        print(f"Пиздец, не удалось загрузить картинку из Base64: {e}")
-        return None
-
-def queue_prompt(prompt_workflow):
-    """Отправляет workflow в очередь ComfyUI API"""
-    try:
-        data = json.dumps({"prompt": prompt_workflow, "client_id": CLIENT_ID}).encode('utf-8')
-        req = requests.post(f"{COMFYUI_API_ADDRESS}/prompt", data=data)
-        req.raise_for_status()
-        return req.json()
-    except requests.RequestException as e:
-        print(f"Пиздец, не удалось поставить в очередь: {e}")
-        return None
-
-def get_image_data(ws, prompt_id, output_node_id):
-    """Слушает WebSocket и вытаскивает результат из нужной ноды"""
-    while True:
-        out = ws.recv()
-        if isinstance(out, str):
-            message = json.loads(out)
-            if message['type'] == 'executing':
-                data = message['data']
-                # Если выполнение завершено для нашего prompt_id, выходим
-                if data['node'] is None and data['prompt_id'] == prompt_id:
-                    break
-    
-    # Забираем историю и находим результат по ID ноды
-    try:
-        history_res = requests.get(f"{COMFYUI_API_ADDRESS}/history/{prompt_id}").json()
-        output_data = history_res[prompt_id]['outputs'][output_node_id]['images'][0]
-        
-        # Собираем полный URL для доступа к картинке
-        image_url = f"{COMFYUI_API_ADDRESS}/view?filename={output_data['filename']}&subfolder={output_data['subfolder']}&type={output_data['type']}"
-        
-        return {"image_url": image_url}
-    except Exception as e:
-        print(f"Пиздец, не удалось получить результат: {e}")
-        return {"error": "Не удалось извлечь результат из истории."}
-
-
-def handler(job):
-    """
-    Основной обработчик, который дёргает RunPod.
-    """
-    job_input = job['input']
-    print(job_input)
-    image = job_input.get("image")
-
-    if not image:
-        return {"error": "Бро, ты забыл передать 'image_url' в запросе."}
-
-    # 1. Загружаем картинку в ComfyUI. Это наш первый и самый важный шаг.
-    uploaded_filename = upload_image_from_base64(image)
-    if not uploaded_filename:
-        return {"error": "Не смог загрузить твою картинку."}
-
-    # 2. Загружаем наш шаблон workflow
-    with open('360.json', 'r') as f:
-        prompt_workflow = json.load(f)
-
-    # 3. Модифицируем воркфлоу на лету. В ноду загрузки подставляем имя нашего файла.
-    # Используем ID ноды, который ты дал: '142'
-    prompt_workflow['508']['inputs']['image'] = uploaded_filename
-
-    # 4. Подключаемся к WebSocket и отправляем задачу
-    try:
-        ws = websocket.WebSocket()
-        ws.connect(f"ws://{COMFYUI_API_ADDRESS}/ws?clientId={CLIENT_ID}")
-        
-        queued_prompt = queue_prompt(prompt_workflow)
-        if not queued_prompt:
-            ws.close()
-            return {"error": "Не удалось поставить задачу в очередь"}
-
-        # 5. Получаем результат, зная ID конечной ноды '506'
-        output = get_image_data(ws, queued_prompt['prompt_id'], '506')
-        ws.close()
-    except Exception as e:
-        return {"error": f"Произошла общая ошибка WebSocket: {e}"}
-
-    return output
-
-if __name__ == "__main__":
-    print("Стартуем сервер-обработчик для RunPod...")
-    print("Ожидаем полного запуска ComfyUI...")
-
-    # Бесконечный цикл, который будет проверять, жив ли ComfyUI
-    while True:
-        try:
-            # Пытаемся сделать запрос к любому эндпоинту ComfyUI
-            response = requests.get(f'{COMFYUI_API_ADDRESS}/queue', timeout=5)
-            # Если мы получили ответ (неважно какой), значит сервер жив
+            response = requests.get(url, timeout=5)
             if response.status_code == 200:
                 print("ComfyUI готов к работе!")
-                break # Выходим из цикла
-        except requests.ConnectionError:
-            # Если сервер еще не поднялся, мы получим эту ошибку.
-            # Это нормально, просто ждем и пробуем снова.
-            print("ComfyUI еще не доступен, ждем 1 секунду...")
-            time.sleep(1)
-        except Exception as e:
-            print(f"Произошла непредвиденная ошибка при проверке ComfyUI: {e}")
-            time.sleep(5)
+                return True
+        except requests.RequestException:
+            pass
+        time.sleep(delay / 1000)
+    print(f"Пиздец, ComfyUI не поднялся после {retries} попыток.")
+    return False
 
-    # И только теперь, когда мы уверены, что ComfyUI работает,
-    # запускаем обработчик RunPod.
-    runpod.serverless.start({"handler": handler})
+def upload_image(base64_string, filename="input_image.png"):
+    """Загружает картинку из Base64 в папку input ComfyUI."""
+    try:
+        if ',' in base64_string:
+            base64_data = base64_string.split(',', 1)[1]
+        else:
+            base64_data = base64_string
+        
+        image_bytes = base64.b64decode(base64_data)
+        
+        files = {
+            'image': (filename, BytesIO(image_bytes), 'image/png'),
+            'overwrite': (None, 'true'),
+            'type': (None, 'input')
+        }
+        
+        response = requests.post(f"http://{COMFY_HOST}/upload/image", files=files, timeout=30)
+        response.raise_for_status()
+        print(f"Картинка '{filename}' успешно загружена.")
+        return response.json()
+    except Exception as e:
+        print(f"Пиздец, не удалось загрузить картинку: {e}")
+        raise
+
+def queue_prompt(prompt_workflow, client_id):
+    """Отправляет workflow в очередь и возвращает prompt_id."""
+    payload = {"prompt": prompt_workflow, "client_id": client_id}
+    data = json.dumps(payload).encode('utf-8')
+    headers = {'Content-Type': 'application/json'}
+    
+    try:
+        response = requests.post(f"http://{COMFY_HOST}/prompt", data=data, headers=headers, timeout=30)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        print(f"Пиздец, не удалось поставить в очередь: {e}")
+        raise
+
+def get_final_image_url(prompt_id, output_node_id):
+    """Ждет результат и вытаскивает URL готовой картинки."""
+    try:
+        response = requests.get(f"http://{COMFY_HOST}/history/{prompt_id}", timeout=60)
+        response.raise_for_status()
+        history = response.json()
+
+        if prompt_id not in history:
+            raise RuntimeError("ID задачи не найден в истории. Возможно, произошла ошибка.")
+
+        prompt_output = history[prompt_id]['outputs'].get(output_node_id)
+        if not prompt_output or 'images' not in prompt_output:
+            raise RuntimeError(f"В ноде {output_node_id} не найдено изображений.")
+        
+        image_data = prompt_output['images'][0]
+        filename = image_data['filename']
+        subfolder = image_data['subfolder']
+        img_type = image_data['type']
+
+        return f"http://{COMFY_HOST}/view?filename={filename}&subfolder={subfolder}&type={img_type}"
+    except Exception as e:
+        print(f"Пиздец, не удалось получить результат: {e}")
+        raise
+
+def handler(job):
+    job_input = job.get('input', {})
+
+    # Проверка для тестовой сборки
+    if job_input.get("is_test"):
+        return {"status": "Test build successful"}
+
+    base64_image = job_input.get("image_base64")
+    if not base64_image:
+        return {"error": "Бро, ты забыл передать 'image_base64' в запросе."}
+
+    client_id = str(uuid.uuid4())
+    ws = None
+    
+    try:
+        # 1. Загружаем картинку
+        uploaded_image_info = upload_image(base64_image)
+        uploaded_filename = uploaded_image_info['name']
+
+        # 2. Загружаем и модифицируем workflow
+        with open(WORKFLOW_FILE, 'r') as f:
+            prompt_workflow = json.load(f)
+        
+        prompt_workflow[LOAD_IMAGE_NODE_ID]['inputs']['image'] = uploaded_filename
+
+        # 3. Отправляем задачу в очередь
+        queued_data = queue_prompt(prompt_workflow, client_id)
+        prompt_id = queued_data['prompt_id']
+        print(f"Задача поставлена в очередь с ID: {prompt_id}")
+
+        # 4. Слушаем WebSocket до завершения
+        ws_url = f"ws://{COMFY_HOST}/ws?clientId={client_id}"
+        ws = websocket.create_connection(ws_url, timeout=10)
+        
+        execution_done = False
+        while not execution_done:
+            out = ws.recv()
+            if isinstance(out, str):
+                message = json.loads(out)
+                if message.get('type') == 'executing' and message.get('data', {}).get('node') is None:
+                    if message['data']['prompt_id'] == prompt_id:
+                        print("Выполнение задачи завершено.")
+                        execution_done = True
+                        break
+        
+        ws.close()
+
+        # 5. Получаем результат
+        final_url = get_final_image_url(prompt_id, SAVE_IMAGE_NODE_ID)
+        
+        return {"image_url": final_url}
+
+    except Exception as e:
+        # Эта строчка важна для отладки, она покажет полную ошибку
+        import traceback
+        traceback.print_exc()
+        return {"error": f"Произошла глобальная ошибка: {e}"}
+    finally:
+        if ws and ws.connected:
+            ws.close()
+
+
+if __name__ == "__main__":
+    # Сначала ждем, пока ComfyUI будет готов принимать запросы
+    if check_server_ready(f"http://{COMFY_HOST}/"):
+        # И только потом запускаем обработчик RunPod
+        runpod.serverless.start({"handler": handler})
