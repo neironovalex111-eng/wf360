@@ -62,4 +62,4 @@ WORKDIR /
 COPY handler.py .
 COPY 360.json .
 # Run the handler
-CMD python /ComfyUI/main.py --listen 0.0.0.0 & python -u /handler.py
+CMD python /ComfyUI/main.py & python -u /handler.py
