@@ -100,11 +100,7 @@ def get_final_image_url(prompt_id, output_node_id):
 def handler(job):
     job_input = job.get('input', {})
 
-    # Проверка для тестовой сборки
-    if job_input.get("is_test"):
-        return {"status": "Test build successful"}
-
-    base64_image = job_input.get("image_base64")
+    base64_image = job_input.get("image")
     if not base64_image:
         return {"error": "Бро, ты забыл передать 'image_base64' в запросе."}
 
