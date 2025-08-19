@@ -157,5 +157,26 @@ def handler(job):
 
 if __name__ == "__main__":
     print("Стартуем сервер-обработчик для RunPod...")
-    time.sleep(120) 
+    print("Ожидаем полного запуска ComfyUI...")
+
+    # Бесконечный цикл, который будет проверять, жив ли ComfyUI
+    while True:
+        try:
+            # Пытаемся сделать запрос к любому эндпоинту ComfyUI
+            response = requests.get(f'{COMFYUI_API_ADDRESS}/queue', timeout=5)
+            # Если мы получили ответ (неважно какой), значит сервер жив
+            if response.status_code == 200:
+                print("ComfyUI готов к работе!")
+                break # Выходим из цикла
+        except requests.ConnectionError:
+            # Если сервер еще не поднялся, мы получим эту ошибку.
+            # Это нормально, просто ждем и пробуем снова.
+            print("ComfyUI еще не доступен, ждем 1 секунду...")
+            time.sleep(1)
+        except Exception as e:
+            print(f"Произошла непредвиденная ошибка при проверке ComfyUI: {e}")
+            time.sleep(5)
+
+    # И только теперь, когда мы уверены, что ComfyUI работает,
+    # запускаем обработчик RunPod.
     runpod.serverless.start({"handler": handler})
