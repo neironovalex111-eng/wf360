@@ -17,7 +17,7 @@ LOAD_IMAGE_NODE_ID = '508'  # <--- ЗАМЕНИ НА СВОЙ ID
 # ID ноды, откуда забирать результат (твоя SaveImage или Preview нода)
 SAVE_IMAGE_NODE_ID = '506'  # <--- ЗАМЕНИ НА СВОЙ ID
 # Имя файла с workflow в API-формате
-WORKFLOW_FILE = '360_api.json' # <--- УБЕДИСЬ, ЧТО ИМЯ ПРАВИЛЬНОЕ
+WORKFLOW_FILE = '360.json' # <--- УБЕДИСЬ, ЧТО ИМЯ ПРАВИЛЬНОЕ
 
 
 def check_server_ready(url, retries=500, delay=50):
