@@ -523,21 +523,35 @@
   },
   "272": {
     "inputs": {
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 768,
       "image": [
         "287",
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ETN_CropImage",
+    "_meta": {
+      "title": "Crop Image"
+    }
   },
   "273": {
     "inputs": {
+      "x": 1280,
+      "y": 0,
+      "width": 256,
+      "height": 768,
       "image": [
         "287",
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ETN_CropImage",
+    "_meta": {
+      "title": "Crop Image"
+    }
   },
   "274": {
     "inputs": {
@@ -557,24 +571,40 @@
   },
   "279": {
     "inputs": {
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 768,
       "image": [
         "274",
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ETN_CropImage",
+    "_meta": {
+      "title": "Crop Image"
+    }
   },
   "280": {
     "inputs": {
+      "x": 256,
+      "y": 0,
+      "width": 256,
+      "height": 768,
       "image": [
         "274",
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ETN_CropImage",
+    "_meta": {
+      "title": "Crop Image"
+    }
   },
   "281": {
     "inputs": {
+      "x_position": 1280,
+      "y_position": 0,
       "background_image": [
         "287",
         0
@@ -584,7 +614,10 @@
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ImagePaste",
+    "_meta": {
+      "title": "Image Paste (Mikey)"
+    }
   },
   "282": {
     "inputs": {
@@ -600,6 +633,8 @@
   },
   "285": {
     "inputs": {
+      "x_position": 0,
+      "y_position": 0,
       "background_image": [
         "281",
         0
@@ -609,7 +644,10 @@
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ImagePaste",
+    "_meta": {
+      "title": "Image Paste (Mikey)"
+    }
   },
   "287": {
     "inputs": {
@@ -696,12 +734,19 @@
   },
   "431": {
     "inputs": {
+      "x": 1280,
+      "y": 0,
+      "width": 256,
+      "height": 768,
       "image": [
         "444",
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ETN_CropImage",
+    "_meta": {
+      "title": "Crop Image"
+    }
   },
   "432": {
     "inputs": {
@@ -717,12 +762,19 @@
   },
   "433": {
     "inputs": {
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 768,
       "image": [
         "444",
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ETN_CropImage",
+    "_meta": {
+      "title": "Crop Image"
+    }
   },
   "434": {
     "inputs": {
@@ -913,15 +965,24 @@
   },
   "446": {
     "inputs": {
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 768,
       "image": [
         "451",
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ETN_CropImage",
+    "_meta": {
+      "title": "Crop Image"
+    }
   },
   "447": {
     "inputs": {
+      "x_position": 1280,
+      "y_position": 0,
       "background_image": [
         "444",
         0
@@ -931,7 +992,10 @@
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ImagePaste",
+    "_meta": {
+      "title": "Image Paste (Mikey)"
+    }
   },
   "448": {
     "inputs": {
@@ -1032,12 +1096,19 @@
   },
   "457": {
     "inputs": {
+      "x": 256,
+      "y": 0,
+      "width": 256,
+      "height": 768,
       "image": [
         "451",
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ETN_CropImage",
+    "_meta": {
+      "title": "Crop Image"
+    }
   },
   "458": {
     "inputs": {
@@ -1086,6 +1157,8 @@
   },
   "460": {
     "inputs": {
+      "x_position": 0,
+      "y_position": 0,
       "background_image": [
         "447",
         0
@@ -1095,7 +1168,10 @@
         0
       ]
     },
-    "_meta": {}
+    "class_type": "ImagePaste",
+    "_meta": {
+      "title": "Image Paste (Mikey)"
+    }
   },
   "461": {
     "inputs": {
@@ -1193,7 +1269,7 @@
   },
   "508": {
     "inputs": {
-      "upload": "image"
+      "image": "example.png"
     },
     "class_type": "LoadImage",
     "_meta": {
