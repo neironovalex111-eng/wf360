@@ -1,33 +1,35 @@
 FROM runpod/base:0.6.3-cuda11.8.0
 
-ARG HF_TOKEN
-
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install base
-RUN apt-get update && apt-get install -y git wget libgl1-mesa-glx libglib2.0-0 && rm -rf /var/lib/apt/lists/*
+# Устанавливаем базовые пакеты
+RUN apt-get update && apt-get install -y --no-install-recommends git wget libgl1-mesa-glx libglib2.0-0 && rm -rf /var/lib/apt/lists/*
 
-# Set python3.11 venv
+# Настраиваем venv
 RUN python3.11 -m venv /opt/venv
-
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Install ComfyUI
+# Устанавливаем ComfyUI
 WORKDIR /
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 
-# Install dependencies
+# Копируем наши локальные файлы СРАЗУ, чтобы не было глюков с WORKDIR
+WORKDIR /
+COPY 360_api.json . # Убедись, что имя файла 360_api.json, а не 360.json
+COPY handler.py .
+COPY start.sh .
+COPY requirements.txt .
+
+# Устанавливаем зависимости Python
 WORKDIR /ComfyUI
-COPY requirements.txt /requirements.txt
-ENV PIP_ROOT_USER_ACTION=ignore
+# ВАЖНО: Исправлена версия CUDA на cu118, чтобы соответствовать базовому образу. У тебя было cu129 - это вызвало бы ошибку при запуске!
 RUN python -m pip install --upgrade pip && \
-    uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129 --no-cache-dir && \
+    uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118 --no-cache-dir && \
     uv pip install --upgrade -r /requirements.txt --no-cache-dir
 
-# Install custom_nodes
+# Устанавливаем кастомные ноды
 WORKDIR /ComfyUI/custom_nodes
-
-RUN git clone https://github.com/ltdrdata/ComfyUI-Manager comfyui-manager && \
+RUN git clone https://github.comcom/ltdrdata/ComfyUI-Manager comfyui-manager && \
     git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts && \
     git clone https://github.com/rgthree/rgthree-comfy && \
     git clone https://github.com/kijai/ComfyUI-KJNodes && \
@@ -45,24 +47,15 @@ RUN git clone https://github.com/ltdrdata/ComfyUI-Manager comfyui-manager && \
     git clone https://github.com/alexopus/ComfyUI-Image-Saver && \
     git clone https://github.com/ProGamerGov/ComfyUI_preview360panorama
 
-# Install custom_nodes dependencies
+# Устанавливаем зависимости кастомных нод
 RUN for d in */ ; do \
-        # Проверяем, что это не менеджер и что файл requirements.txt существует
         if [ "$d" != "comfyui-manager/" ] && [ -f "${d}requirements.txt" ]; then \
             echo "--- Installing requirements for $d ---"; \
             pip install -r "${d}requirements.txt"; \
         fi; \
     done
 
-
-
-# Add files
-WORKDIR /
-COPY 360.json .
-COPY handler.py .
-COPY start.sh . # <-- КОПИРУЕМ НАШ НОВЫЙ СКРИПТ
-
-# Делаем наш скрипт исполняемым
+# Делаем наш скрит исполняемым
 RUN chmod +x /start.sh
 
 # Запускаем наш скрипт как точку входа
