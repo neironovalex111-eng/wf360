@@ -21,6 +21,11 @@ ENV PIP_ROOT_USER_ACTION=ignore
 RUN python -m pip install --upgrade pip && \
     uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129 --no-cache-dir && \
     uv pip install --upgrade -r /requirements.txt --no-cache-dir
+
+
+# Install models
+RUN git clone --depth 1 https://huggingface.co/neishonagenc/360models models_new && mv models models_old && mv models_new models && rm -rf models_old
+
 # Install custom_nodes
 WORKDIR /ComfyUI/custom_nodes
 
@@ -51,10 +56,7 @@ RUN for d in */ ; do \
         fi; \
     done
 
-# Install models
-WORKDIR /ComfyUI/models
 
-RUN git clone https://huggingface.co/neishonagenc/360models
 
 # Add files
 WORKDIR /
