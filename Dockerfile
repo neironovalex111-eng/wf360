@@ -24,7 +24,14 @@ RUN python -m pip install --upgrade pip && \
 
 
 # Install models
-RUN git clone --depth 1 https://huggingface.co/neishonagenc/360models models_new && mv models models_old && mv models_new models && rm -rf models_old
+RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/diffusion_models/flux1-kontext-dev.safetensors -O /ComfyUI/models/diffusion_models
+
+RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/text_encoders/t5xxl_fp16.safetensors -O /ComfyUI/models/text_encoders/t5xxl_fp16.safetensors
+RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/text_encoders/clip_l.safetensors -O /ComfyUI/models/text_encoders/clip_l.safetensors
+
+RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/vae/ae.safetensors -O /ComfyUI/models/vae/ae.safetensors
+
+RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/loras/HDR360.safetensors -O /ComfyUI/models/loras/HDR360.safetensors
 
 # Install custom_nodes
 WORKDIR /ComfyUI/custom_nodes
