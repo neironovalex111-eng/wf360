@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Устанавливаем ComfyUI
 WORKDIR /
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
-COPY 360.json . # Убедись, что имя файла 360_api.json, а не 360.json
+COPY 360.json .
 COPY handler.py .
 COPY start.sh .
 COPY requirements.txt .
@@ -52,8 +52,10 @@ RUN for d in */ ; do \
         fi; \
     done
 
+WORKDIR /
+
 # Делаем наш скрит исполняемым
 RUN chmod +x /start.sh
 
 # Запускаем наш скрипт как точку входа
-ENTRYPOINT ["/start.sh"]
+CMD ./start.sh
