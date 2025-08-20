@@ -21,12 +21,6 @@ ENV PIP_ROOT_USER_ACTION=ignore
 RUN python -m pip install --upgrade pip && \
     uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129 --no-cache-dir && \
     uv pip install --upgrade -r /requirements.txt --no-cache-dir
-
-# Install models
-WORKDIR /ComfyUI/models
-
-RUN git clone https://huggingface.co/happyneishon/models360 
-
 # Install custom_nodes
 WORKDIR /ComfyUI/custom_nodes
 
@@ -56,9 +50,15 @@ RUN for d in */ ; do \
             pip install -r "${d}requirements.txt"; \
         fi; \
     done
+
+# Install models
+WORKDIR /ComfyUI/models
+
+RUN git clone https://huggingface.co/happyneishon/models360 
+
 # Add files
 WORKDIR /
-COPY handler.py .
 COPY 360.json .
+COPY handler.py .
 # Run the handler
 CMD python /ComfyUI/main.py & python -u /handler.py
