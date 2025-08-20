@@ -24,17 +24,6 @@ RUN python -m pip install --upgrade pip && \
     uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu129 --no-cache-dir && \
     uv pip install --upgrade -r /requirements.txt --no-cache-dir
 
-
-# Install models
-RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/diffusion_models/flux1-kontext-dev.safetensors -O /ComfyUI/models/diffusion_models/flux1-kontext-dev.safetensors
-
-RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/text_encoders/t5xxl_fp16.safetensors -O /ComfyUI/models/text_encoders/t5xxl_fp16.safetensors
-RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/text_encoders/clip_l.safetensors -O /ComfyUI/models/text_encoders/clip_l.safetensors
-
-RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/vae/ae.safetensors -O /ComfyUI/models/vae/ae.safetensors
-
-RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/loras/HDR360.safetensors -O /ComfyUI/models/loras/HDR360.safetensors
-
 # Install custom_nodes
 WORKDIR /ComfyUI/custom_nodes
 
@@ -71,5 +60,10 @@ RUN for d in */ ; do \
 WORKDIR /
 COPY 360.json .
 COPY handler.py .
-# Run the handler
-CMD python /ComfyUI/main.py & python -u /handler.py
+COPY start.sh . # <-- КОПИРУЕМ НАШ НОВЫЙ СКРИПТ
+
+# Делаем наш скрипт исполняемым
+RUN chmod +x /start.sh
+
+# Запускаем наш скрипт как точку входа
+ENTRYPOINT ["/start.sh"]
