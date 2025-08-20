@@ -54,7 +54,7 @@ RUN for d in */ ; do \
 # Install models
 WORKDIR /ComfyUI/models
 
-RUN git clone https://huggingface.co/happyneishon/models360 
+RUN git clone https://huggingface.co/neishonagenc/360models
 
 # Add files
 WORKDIR /
