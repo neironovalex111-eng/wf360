@@ -1,6 +1,13 @@
 FROM runpod/base:0.6.3-cuda11.8.0
 
 ENV DEBIAN_FRONTEND=noninteractive
+# Устанавливаем ComfyUI
+WORKDIR /
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git
+COPY 360.json . # Убедись, что имя файла 360_api.json, а не 360.json
+COPY handler.py .
+COPY start.sh .
+COPY requirements.txt .
 
 # Устанавливаем базовые пакеты
 RUN apt-get update && apt-get install -y --no-install-recommends git wget libgl1-mesa-glx libglib2.0-0 && rm -rf /var/lib/apt/lists/*
@@ -9,13 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends git wget libgl1
 RUN python3.11 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Устанавливаем ComfyUI
-WORKDIR /
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git
-COPY 360.json . # Убедись, что имя файла 360_api.json, а не 360.json
-COPY handler.py .
-COPY start.sh .
-COPY requirements.txt .
 
 # Устанавливаем зависимости Python
 WORKDIR /ComfyUI
