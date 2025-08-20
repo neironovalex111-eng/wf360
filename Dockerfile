@@ -26,7 +26,7 @@ RUN python -m pip install --upgrade pip && \
 
 # Устанавливаем кастомные ноды
 WORKDIR /ComfyUI/custom_nodes
-RUN git clone https://github.comcom/ltdrdata/ComfyUI-Manager comfyui-manager && \
+RUN git clone https://github.com/ltdrdata/ComfyUI-Manager comfyui-manager && \
     git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts && \
     git clone https://github.com/rgthree/rgthree-comfy && \
     git clone https://github.com/kijai/ComfyUI-KJNodes && \
