@@ -12,9 +12,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Устанавливаем ComfyUI
 WORKDIR /
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
-
-# Копируем наши локальные файлы СРАЗУ, чтобы не было глюков с WORKDIR
-WORKDIR /
 COPY 360.json . # Убедись, что имя файла 360_api.json, а не 360.json
 COPY handler.py .
 COPY start.sh .
