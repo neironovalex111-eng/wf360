@@ -1,5 +1,7 @@
 FROM runpod/base:0.6.3-cuda11.8.0
 
+ARG HF_TOKEN
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install base
@@ -24,7 +26,7 @@ RUN python -m pip install --upgrade pip && \
 
 
 # Install models
-RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/diffusion_models/flux1-kontext-dev.safetensors -O /ComfyUI/models/diffusion_models
+RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/diffusion_models/flux1-kontext-dev.safetensors -O /ComfyUI/models/diffusion_models/flux1-kontext-dev.safetensors
 
 RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/text_encoders/t5xxl_fp16.safetensors -O /ComfyUI/models/text_encoders/t5xxl_fp16.safetensors
 RUN wget --header="Authorization: Bearer ${HF_TOKEN}" https://huggingface.co/neishonagenc/360models/resolve/main/text_encoders/clip_l.safetensors -O /ComfyUI/models/text_encoders/clip_l.safetensors
