@@ -706,32 +706,6 @@
       "title": "CLIP Text Encode (Positive Prompt)"
     }
   },
-  "332": {
-    "inputs": {
-      "images": [
-        "285",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
-  "335": {
-    "inputs": {
-      "format": "JPEG",
-      "quality": 75,
-      "image": [
-        "285",
-        0
-      ]
-    },
-    "class_type": "FastPreview",
-    "_meta": {
-      "title": "Fast Preview"
-    }
-  },
   "431": {
     "inputs": {
       "x": 1280,
@@ -1274,6 +1248,19 @@
     "class_type": "LoadImage",
     "_meta": {
       "title": "Load Image"
+    }
+  },
+  "509": {
+    "inputs": {
+      "filename_prefix": "wf360",
+      "images": [
+        "285",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
     }
   }
 }
