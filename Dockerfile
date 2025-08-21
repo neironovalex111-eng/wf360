@@ -1,4 +1,4 @@
-FROM runpod/base:0.6.3-cuda11.8.0
+FROM nvidia/cuda:12.8.0-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 # Устанавливаем ComfyUI
