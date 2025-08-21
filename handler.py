@@ -15,7 +15,7 @@ COMFY_HOST = "127.0.0.1:8188"
 # ID ноды, куда грузить картинку (твоя LoadImage нода)
 LOAD_IMAGE_NODE_ID = '508'  # <--- ЗАМЕНИ НА СВОЙ ID
 # ID ноды, откуда забирать результат (твоя SaveImage или Preview нода)
-SAVE_IMAGE_NODE_ID = '506'  # <--- ЗАМЕНИ НА СВОЙ ID
+SAVE_IMAGE_NODE_ID = '509'  # <--- ЗАМЕНИ НА СВОЙ ID
 # Имя файла с workflow в API-формате
 WORKFLOW_FILE = '360.json' # <--- УБЕДИСЬ, ЧТО ИМЯ ПРАВИЛЬНОЕ
 
