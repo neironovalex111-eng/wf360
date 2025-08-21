@@ -21,7 +21,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Устанавливаем зависимости Python
 WORKDIR /ComfyUI
 # ВАЖНО: Исправлена версия CUDA на cu118, чтобы соответствовать базовому образу. У тебя было cu129 - это вызвало бы ошибку при запуске!
-RUN python -m pip install --upgrade pip && \
+RUN python -m pip install --upgrade pip && python -m pip install uv \
     uv pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118 --no-cache-dir && \
     uv pip install --upgrade -r /requirements.txt --no-cache-dir
 
