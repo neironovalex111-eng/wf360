@@ -1,6 +1,10 @@
 FROM nvidia/cuda:12.8.0-runtime-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
+
+# Устанавливаем базовые пакеты
+RUN apt-get update && apt-get install -y --no-install-recommends git wget libgl1-mesa-glx libglib2.0-0 && rm -rf /var/lib/apt/lists/*
+
 # Устанавливаем ComfyUI
 WORKDIR /
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
@@ -8,9 +12,6 @@ COPY 360.json .
 COPY handler.py .
 COPY start.sh .
 COPY requirements.txt .
-
-# Устанавливаем базовые пакеты
-RUN apt-get update && apt-get install -y --no-install-recommends git wget libgl1-mesa-glx libglib2.0-0 && rm -rf /var/lib/apt/lists/*
 
 # Настраиваем venv
 RUN python3.11 -m venv /opt/venv
