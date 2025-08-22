@@ -97,6 +97,39 @@ def get_final_image_url(prompt_id, output_node_id):
         print(f"Пиздец, не удалось получить результат: {e}")
         raise
 
+def get_final_image_as_base64(prompt_id, output_node_id):
+    """Ждет результат, скачивает картинку и возвращает ее в Base64."""
+    try:
+        # Сначала получаем историю, чтобы найти имя файла
+        history_response = requests.get(f"http://{COMFY_HOST}/history/{prompt_id}", timeout=60)
+        history_response.raise_for_status()
+        history = history_response.json()
+
+        if prompt_id not in history:
+            raise RuntimeError("ID задачи не найден в истории.")
+
+        prompt_output = history[prompt_id]['outputs'].get(output_node_id)
+        if not prompt_output or 'images' not in prompt_output:
+            raise RuntimeError(f"В ноде {output_node_id} не найдено изображений.")
+        
+        image_data = prompt_output['images'][0]
+        filename = image_data['filename']
+        subfolder = image_data['subfolder']
+        img_type = image_data['type']
+
+        # Теперь, зная имя файла, "сходим" за ним как курьер
+        print(f"Забираем финальный файл: {filename}")
+        image_url = f"http://{COMFY_HOST}/view?filename={filename}&subfolder={subfolder}&type={img_type}"
+        image_response = requests.get(image_url, timeout=60)
+        image_response.raise_for_status()
+
+        # Кодируем бинарные данные в Base64 и возвращаем
+        return base64.b64encode(image_response.content).decode('utf-8')
+
+    except Exception as e:
+        print(f"Пиздец, не удалось получить результат: {e}")
+        raise
+
 def handler(job):
     job_input = job.get('input', {})
 
@@ -141,10 +174,10 @@ def handler(job):
         ws.close()
 
         # 5. Получаем результат
-        final_url = get_final_image_url(prompt_id, SAVE_IMAGE_NODE_ID)
+        final_image_base64 = get_final_image_as_base64(prompt_id, SAVE_IMAGE_NODE_ID)
         
-        return {"image_url": final_url}
-
+        return {"image_base64": final_image_base64}
+        
     except Exception as e:
         # Эта строчка важна для отладки, она покажет полную ошибку
         import traceback
@@ -156,7 +189,5 @@ def handler(job):
 
 
 if __name__ == "__main__":
-    # Сначала ждем, пока ComfyUI будет готов принимать запросы
     if check_server_ready(f"http://{COMFY_HOST}/"):
-        # И только потом запускаем обработчик RunPod
         runpod.serverless.start({"handler": handler})
