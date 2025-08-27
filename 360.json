@@ -1,7 +1,7 @@
 {
   "6": {
     "inputs": {
-      "text": "create a 360 hdr",
+      "text": "create a 360 hdr photo",
       "clip": [
         "38",
         0
@@ -111,7 +111,7 @@
   },
   "196": {
     "inputs": {
-      "noise_seed": 1102069141210650
+      "noise_seed": 768006551589065
     },
     "class_type": "RandomNoise",
     "_meta": {
@@ -240,7 +240,7 @@
       ],
       "crop": "disabled",
       "image": [
-        "508",
+        "510",
         0
       ]
     },
@@ -444,7 +444,7 @@
   },
   "264": {
     "inputs": {
-      "seed": 758809391412481,
+      "seed": 369195207083615,
       "steps": 30,
       "cfg": 1,
       "sampler_name": "euler",
@@ -494,7 +494,7 @@
       "num_beams": 3,
       "do_sample": true,
       "output_mask_select": "",
-      "seed": 920753816061335,
+      "seed": 186437009608775,
       "image": [
         "287",
         0
@@ -706,330 +706,8 @@
       "title": "CLIP Text Encode (Positive Prompt)"
     }
   },
-  "431": {
-    "inputs": {
-      "x": 1280,
-      "y": 0,
-      "width": 256,
-      "height": 768,
-      "image": [
-        "444",
-        0
-      ]
-    },
-    "class_type": "ETN_CropImage",
-    "_meta": {
-      "title": "Crop Image"
-    }
-  },
-  "432": {
-    "inputs": {
-      "image": [
-        "434",
-        0
-      ]
-    },
-    "class_type": "ImageInvert",
-    "_meta": {
-      "title": "Invert Image"
-    }
-  },
-  "433": {
-    "inputs": {
-      "x": 0,
-      "y": 0,
-      "width": 256,
-      "height": 768,
-      "image": [
-        "444",
-        0
-      ]
-    },
-    "class_type": "ETN_CropImage",
-    "_meta": {
-      "title": "Crop Image"
-    }
-  },
-  "434": {
-    "inputs": {
-      "mode": "2-color",
-      "width": 512,
-      "height": 768,
-      "color_1": "white",
-      "color_2": "black",
-      "orientation": "vertical",
-      "bar_frequency": 2,
-      "offset": 0,
-      "color1_hex": "#000000",
-      "color2_hex": "#000000"
-    },
-    "class_type": "CR Color Bars",
-    "_meta": {
-      "title": "🟫 CR Color Bars"
-    }
-  },
-  "435": {
-    "inputs": {
-      "mode": "2-color",
-      "width": 512,
-      "height": 768,
-      "color_1": "black",
-      "color_2": "white",
-      "orientation": "vertical",
-      "bar_frequency": 3,
-      "offset": 0,
-      "color1_hex": "#000000",
-      "color2_hex": "#000000"
-    },
-    "class_type": "CR Color Bars",
-    "_meta": {
-      "title": "🟫 CR Color Bars"
-    }
-  },
-  "436": {
-    "inputs": {
-      "resize_behavior": "source_size",
-      "image_base": [
-        "437",
-        0
-      ],
-      "image_to_paste": [
-        "433",
-        0
-      ],
-      "mask": [
-        "432",
-        0
-      ]
-    },
-    "class_type": "Paste By Mask",
-    "_meta": {
-      "title": "Paste By Mask"
-    }
-  },
-  "437": {
-    "inputs": {
-      "resize_behavior": "source_size",
-      "image_base": [
-        "434",
-        0
-      ],
-      "image_to_paste": [
-        "431",
-        0
-      ],
-      "mask": [
-        "434",
-        0
-      ]
-    },
-    "class_type": "Paste By Mask",
-    "_meta": {
-      "title": "Paste By Mask"
-    }
-  },
-  "438": {
-    "inputs": {
-      "blur_radius": 20,
-      "sigma": 1.1,
-      "image": [
-        "435",
-        0
-      ]
-    },
-    "class_type": "ImageBlur",
-    "_meta": {
-      "title": "Image Blur"
-    }
-  },
-  "439": {
-    "inputs": {
-      "method": "intensity",
-      "image": [
-        "438",
-        0
-      ]
-    },
-    "class_type": "Image To Mask",
-    "_meta": {
-      "title": "Image To Mask"
-    }
-  },
-  "440": {
-    "inputs": {
-      "sampler_name": "euler"
-    },
-    "class_type": "KSamplerSelect",
-    "_meta": {
-      "title": "KSamplerSelect"
-    }
-  },
-  "441": {
-    "inputs": {
-      "noise_seed": 839492530967962
-    },
-    "class_type": "RandomNoise",
-    "_meta": {
-      "title": "RandomNoise"
-    }
-  },
-  "442": {
-    "inputs": {
-      "cfg": 1,
-      "model": [
-        "443",
-        0
-      ],
-      "positive": [
-        "462",
-        0
-      ],
-      "negative": [
-        "463",
-        0
-      ]
-    },
-    "class_type": "CFGGuider",
-    "_meta": {
-      "title": "CFGGuider"
-    }
-  },
-  "443": {
-    "inputs": {
-      "max_shift": 1.15,
-      "base_shift": 0.5,
-      "width": 1024,
-      "height": 1024,
-      "model": [
-        "215",
-        0
-      ]
-    },
-    "class_type": "ModelSamplingFlux",
-    "_meta": {
-      "title": "ModelSamplingFlux"
-    }
-  },
-  "444": {
-    "inputs": {
-      "samples": [
-        "456",
-        0
-      ],
-      "vae": [
-        "39",
-        0
-      ]
-    },
-    "class_type": "VAEDecode",
-    "_meta": {
-      "title": "VAE Decode"
-    }
-  },
-  "445": {
-    "inputs": {
-      "width": 1024,
-      "height": 1024,
-      "batch_size": 1
-    },
-    "class_type": "EmptySD3LatentImage",
-    "_meta": {
-      "title": "EmptySD3LatentImage"
-    }
-  },
-  "446": {
-    "inputs": {
-      "x": 0,
-      "y": 0,
-      "width": 256,
-      "height": 768,
-      "image": [
-        "451",
-        0
-      ]
-    },
-    "class_type": "ETN_CropImage",
-    "_meta": {
-      "title": "Crop Image"
-    }
-  },
-  "447": {
-    "inputs": {
-      "x_position": 1280,
-      "y_position": 0,
-      "background_image": [
-        "444",
-        0
-      ],
-      "foreground_image": [
-        "446",
-        0
-      ]
-    },
-    "class_type": "ImagePaste",
-    "_meta": {
-      "title": "Image Paste (Mikey)"
-    }
-  },
-  "448": {
-    "inputs": {
-      "noise_mask": true,
-      "positive": [
-        "462",
-        0
-      ],
-      "negative": [
-        "463",
-        0
-      ],
-      "vae": [
-        "39",
-        0
-      ],
-      "pixels": [
-        "449",
-        0
-      ],
-      "mask": [
-        "439",
-        0
-      ]
-    },
-    "class_type": "InpaintModelConditioning",
-    "_meta": {
-      "title": "InpaintModelConditioning"
-    }
-  },
-  "449": {
-    "inputs": {
-      "image": [
-        "436",
-        0
-      ]
-    },
-    "class_type": "ImageRemoveAlpha+",
-    "_meta": {
-      "title": "🔧 Image Remove Alpha"
-    }
-  },
-  "450": {
-    "inputs": {
-      "model": [
-        "443",
-        0
-      ]
-    },
-    "class_type": "DifferentialDiffusion",
-    "_meta": {
-      "title": "Differential Diffusion"
-    }
-  },
   "451": {
     "inputs": {
-      "samples": [
-        "458",
-        0
-      ],
       "vae": [
         "39",
         0
@@ -1040,164 +718,15 @@
       "title": "VAE Decode"
     }
   },
-  "456": {
+  "455": {
     "inputs": {
-      "noise": [
-        "441",
-        0
-      ],
-      "guider": [
-        "442",
-        0
-      ],
-      "sampler": [
-        "440",
-        0
-      ],
-      "sigmas": [
-        "459",
-        0
-      ],
-      "latent_image": [
-        "445",
-        0
-      ]
+      "dishonesty_factor": -0.02,
+      "start_percent": 0.2800000000000001,
+      "end_percent": 0.95
     },
-    "class_type": "SamplerCustomAdvanced",
+    "class_type": "LyingSigmaSampler",
     "_meta": {
-      "title": "SamplerCustomAdvanced"
-    }
-  },
-  "457": {
-    "inputs": {
-      "x": 256,
-      "y": 0,
-      "width": 256,
-      "height": 768,
-      "image": [
-        "451",
-        0
-      ]
-    },
-    "class_type": "ETN_CropImage",
-    "_meta": {
-      "title": "Crop Image"
-    }
-  },
-  "458": {
-    "inputs": {
-      "seed": 358204736852312,
-      "steps": 30,
-      "cfg": 1,
-      "sampler_name": "euler",
-      "scheduler": "normal",
-      "denoise": 0.75,
-      "model": [
-        "450",
-        0
-      ],
-      "positive": [
-        "462",
-        0
-      ],
-      "negative": [
-        "448",
-        1
-      ],
-      "latent_image": [
-        "448",
-        2
-      ]
-    },
-    "class_type": "KSampler",
-    "_meta": {
-      "title": "KSampler"
-    }
-  },
-  "459": {
-    "inputs": {
-      "scheduler": "simple",
-      "steps": 30,
-      "denoise": 1,
-      "model": [
-        "443",
-        0
-      ]
-    },
-    "class_type": "BasicScheduler",
-    "_meta": {
-      "title": "BasicScheduler"
-    }
-  },
-  "460": {
-    "inputs": {
-      "x_position": 0,
-      "y_position": 0,
-      "background_image": [
-        "447",
-        0
-      ],
-      "foreground_image": [
-        "457",
-        0
-      ]
-    },
-    "class_type": "ImagePaste",
-    "_meta": {
-      "title": "Image Paste (Mikey)"
-    }
-  },
-  "461": {
-    "inputs": {
-      "images": [
-        "460",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
-  "462": {
-    "inputs": {
-      "guidance": 2.5,
-      "conditioning": [
-        "464",
-        0
-      ]
-    },
-    "class_type": "FluxGuidance",
-    "_meta": {
-      "title": "FluxGuidance"
-    }
-  },
-  "463": {
-    "inputs": {
-      "conditioning": [
-        "464",
-        0
-      ]
-    },
-    "class_type": "ConditioningZeroOut",
-    "_meta": {
-      "title": "ConditioningZeroOut"
-    }
-  },
-  "464": {
-    "inputs": {
-      "conditioning": [
-        "6",
-        0
-      ],
-      "latent": [
-        "465",
-        0
-      ]
-    },
-    "class_type": "ReferenceLatent",
-    "_meta": {
-      "title": "ReferenceLatent"
+      "title": "Lying Sigma Sampler"
     }
   },
   "465": {
@@ -1232,7 +761,7 @@
   "507": {
     "inputs": {
       "image": [
-        "508",
+        "510",
         0
       ]
     },
@@ -1243,7 +772,7 @@
   },
   "508": {
     "inputs": {
-      "image": "example.png"
+      "image": "test3.jpeg"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -1261,6 +790,20 @@
     "class_type": "SaveImage",
     "_meta": {
       "title": "Save Image"
+    }
+  },
+  "510": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "crop": "disabled",
+      "image": [
+        "508",
+        0
+      ]
+    },
+    "class_type": "Resize Image for SDXL",
+    "_meta": {
+      "title": "Resize Image for SDXL (Mikey)"
     }
   }
 }
