@@ -19,6 +19,8 @@ SAVE_IMAGE_NODE_ID = '509'  # <--- ЗАМЕНИ НА СВОЙ ID
 # Имя файла с workflow в API-формате
 WORKFLOW_FILE = '360.json' # <--- УБЕДИСЬ, ЧТО ИМЯ ПРАВИЛЬНОЕ
 
+PROMPT_NODE_ID = "6"
+
 
 def check_server_ready(url, retries=500, delay=50):
     """Ждет, пока сервер ComfyUI не станет доступен."""
@@ -137,6 +139,8 @@ def handler(job):
     if not base64_image:
         return {"error": "Бро, ты забыл передать 'image_base64' в запросе."}
 
+    prompt = job_input.get("prompt")
+
     client_id = str(uuid.uuid4())
     ws = None
     
@@ -150,6 +154,7 @@ def handler(job):
             prompt_workflow = json.load(f)
         
         prompt_workflow[LOAD_IMAGE_NODE_ID]['inputs']['image'] = uploaded_filename
+        prompt_workflow[PROMPT_NODE_ID]['inputs']['text'] = prompt
 
         # 3. Отправляем задачу в очередь
         queued_data = queue_prompt(prompt_workflow, client_id)
