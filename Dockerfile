@@ -44,6 +44,9 @@ RUN git clone https://github.com/ltdrdata/ComfyUI-Manager comfyui-manager && \
     git clone https://github.com/alexopus/ComfyUI-Image-Saver && \
     git clone https://github.com/ProGamerGov/ComfyUI_preview360panorama
 
+# Фиксируем версию
+RUN cd comfyui-tooling-nodes && git reset --hard 5ef2fdd
+
 # Устанавливаем зависимости кастомных нод
 RUN for d in */ ; do \
         if [ "$d" != "comfyui-manager/" ] && [ -f "${d}requirements.txt" ]; then \
@@ -54,7 +57,6 @@ RUN for d in */ ; do \
 
 WORKDIR /
 
-RUN cd comfyui-tooling-nodes && git reset --hard 5ef2fdd
 
 # Делаем наш скрит исполняемым
 RUN chmod +x /start.sh
